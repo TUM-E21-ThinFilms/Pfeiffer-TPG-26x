@@ -17,6 +17,8 @@ from slave.protocol import Protocol
 from slave.transport import Timeout
 import logging
 
+class CommunicationError(Exception):
+    pass
 
 class PfeifferTPG26xProtocol(Protocol):
 
@@ -68,7 +70,10 @@ class PfeifferTPG26xProtocol(Protocol):
         self.skipEnquiry = False
 
     def get_response(self, transport):
-        return transport.read_until(self.responseTerminal.encode(self.encoding))
+        try:
+            return transport.read_until(self.responseTerminal.encode(self.encoding))
+        except slave.transport.Timeout:
+            raise CommunicationError("Received a timeout")
 
     def parse_response(self, response):
         return response.decode(self.encoding).split(self.responseDataSeparator)
@@ -77,10 +82,10 @@ class PfeifferTPG26xProtocol(Protocol):
         response = self.get_response(transport)
 
         if self.is_nack(response):
-            raise ValueError("Acknowledgement error! Negative Acknowledgement received!")
+            raise CommunicationError("Acknowledgement error! Negative Acknowledgement received")
         if not self.is_ack(response):
             self.logger.debug("Received: \"%s\"", repr(response))
-            raise ValueError("Acknowledgement error! No acknowledgement was sent back from gauge!")
+            raise CommunicationError("Acknowledgement error! No acknowledgement was sent back from gauge")
 
     def is_ack(self, response):
         return response == b'\x06'

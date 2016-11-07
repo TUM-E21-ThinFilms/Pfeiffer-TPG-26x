@@ -30,8 +30,7 @@ class PfeifferFactory:
         logger.addHandler(fh)
         return logger
     
-    # '/dev/ttyMXUSB0'
-    def create_gauge(self, device="/dev/ttyUSB0", logger=None):
+    def create_gauge(self, device="/dev/ttyUSB1", logger=None):
         if logger is None:
             logger = self.get_logger()
         
