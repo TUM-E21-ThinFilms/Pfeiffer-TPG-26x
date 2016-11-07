@@ -46,13 +46,13 @@ class PfeifferTPG26xProtocol(Protocol):
     def clear(self, transport):
         # Send <CR><LF>
         # this should stop always the continous measurement
+        self.logger.debug("Clearing message buffer...")
         transport.__write__(b'\x0D\x0A')
-        
         while True:
             try:
                 resp = transport.read_bytes(32)
             except slave.transport.Timeout:
-                pass
+                break
         return True
     
     def skipNextEnquiry(self, skip=True):
