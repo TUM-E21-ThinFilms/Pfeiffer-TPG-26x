@@ -18,7 +18,7 @@ from protocol import PfeifferTPG26xProtocol
 from slave.transport import Serial
 import logging
 
-class PfeifferFactory:
+class PfeifferTPG26xFactory:
 
     def get_logger(self):
         logger = logging.getLogger('Full Range Gauge.')
