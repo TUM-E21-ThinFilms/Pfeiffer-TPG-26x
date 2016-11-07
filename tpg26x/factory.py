@@ -21,10 +21,10 @@ import logging
 class PfeifferTPG26xFactory:
 
     def get_logger(self):
-        logger = logging.getLogger('Full Range Gauge.')
+        logger = logging.getLogger('Pfeiffer Gauge')
         logger.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        fh = logging.FileHandler('Gauge.log')
+        fh = logging.FileHandler('gauge.log')
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter)
         logger.addHandler(fh)

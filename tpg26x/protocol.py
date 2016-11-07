@@ -53,6 +53,8 @@ class PfeifferTPG26xProtocol(Protocol):
                 resp = transport.read_bytes(32)
             except slave.transport.Timeout:
                 break
+                
+        self.logger.debug("Message buffer cleared.")
         return True
     
     def skipNextEnquiry(self, skip=True):
