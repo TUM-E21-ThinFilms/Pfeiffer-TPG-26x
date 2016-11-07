@@ -140,7 +140,7 @@ class PfeifferTPG26xDriver(Driver):
     
     # Note that this method should only be called after an
     # `start_continuous_measurement`
-    def get_continous_measurement(self):
+    def get_continuous_measurement(self):
         
         reader = Reader(self._transport, self._protocol)
         return reader.read([Mapping(PRESSURE_READING), Float, Mapping(PRESSURE_READING), Float])
