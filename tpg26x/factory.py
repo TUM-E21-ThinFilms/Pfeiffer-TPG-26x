@@ -35,5 +35,5 @@ class PfeifferTPG26xFactory:
             logger = self.get_logger()
         
         protocol = PfeifferTPG26xProtocol(logger)
-        return PfeifferTPG26xDriver(Serial(device, 9600, 8, 'N', 1, 0.1), protocol)
+        return PfeifferTPG26xDriver(Serial(device, 9600, 8, 'N', 1, 0.5), protocol)
 
