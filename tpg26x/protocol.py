@@ -50,7 +50,7 @@ class PfeifferTPG26xProtocol(Protocol):
         
         while True:
             try:
-                resp = transport.__read__(32)
+                resp = transport.read_bytes(32)
             except slave.transport.Timeout:
                 pass
         return True
