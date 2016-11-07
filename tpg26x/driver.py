@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from protocol import PfeifferTPG26xProtocol
+from protocol import PfeifferTPG26xProtocol, CommunicationError
 from slave.driver import Driver, Command, _load, _typelist
 from slave.types import Mapping, Stream, Float, String, Integer
 
