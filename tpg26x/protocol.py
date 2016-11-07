@@ -13,26 +13,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import slave
 from slave.protocol import Protocol
 from slave.transport import Timeout
-import logging
 
 class CommunicationError(Exception):
     pass
 
 class PfeifferTPG26xProtocol(Protocol):
 
-    def __init__(self, logger=None):
+    def __init__(self, logger):
         self.encoding = "ascii"
         self.responseTerminal = "\r\n"
         self.messageTerminal = "\r\n"
         self.responseDataSeparator = ","
         self.skipEnquiry = False
-        
-        if logger is None:
-            logger = logging.getLogger(__name__)
-            logger.addHandler(logging.NullHandler())
-
         self.logger = logger
 
     def reset(self, transport):
