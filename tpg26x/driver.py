@@ -166,17 +166,9 @@ class PfeifferTPG26xDriver(Driver):
         # Fire any cmd, in order to stop measurement
         try:
             self.reset()
-        except ValueError as e:
+        except CommunicationError as e:
             # ignore this error... since we're in COM, we will not receive an <ACK>
-            # and this ValueError says that.
             pass
-        
-        # Clear the buffer...
-        while True:
-            response = self._protocol.get_response(self._transport)
-
-            if self._protocol.is_ack(response) or self._protocol.is_nack(response):
-                break
                 
         self._protocol.clear(self._transport)
             
