@@ -15,7 +15,7 @@
 
 from protocol import PfeifferTPG26xProtocol, CommunicationError
 from slave.driver import Driver, Command, _load, _typelist
-from slave.types import Mapping, Stream, Float, String, Integer
+from slave.types import Mapping, Stream, Float
 
 PRESSURE_READING = {
     'Measurement data okay': '0',
@@ -171,5 +171,3 @@ class PfeifferTPG26xDriver(Driver):
             pass
                 
         self._protocol.clear(self._transport)
-            
-        
