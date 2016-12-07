@@ -15,7 +15,7 @@
 
 from driver import PfeifferTPG26xDriver
 from protocol import PfeifferTPG26xProtocol
-from slave.transport import Serial
+from e21_util.transport import Serial
 import logging
 
 class PfeifferTPG26xFactory:

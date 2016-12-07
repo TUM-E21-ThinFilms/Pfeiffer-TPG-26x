@@ -14,11 +14,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import slave
+
+import e21_util
+from e21_util.lock import InterProcessTransportLock
+from e21_util.error import CommunicationError
+
 from slave.protocol import Protocol
 from slave.transport import Timeout
-
-class CommunicationError(Exception):
-    pass
 
 class PfeifferTPG26xProtocol(Protocol):
 
@@ -44,19 +46,17 @@ class PfeifferTPG26xProtocol(Protocol):
         return ''.join(msg).encode(self.encoding)
 
     def clear(self, transport):
-        # Send <CR><LF>
-        # this should stop always the continous measurement
-        self.logger.debug("Clearing message buffer...")
-        transport.__write__(b'\x0D\x0A')
-        while True:
+        with InterProcessTransportLock(transport):
+            # Send <CR><LF>
+            # this should stop always the continous measurement
+            self.logger.debug("Clearing message buffer...")
+            transport.__write__(b'\x0D\x0A')
             try:
-                resp = transport.read_bytes(32)
+                while True:
+                    transport.read_bytes(32)
             except slave.transport.Timeout:
-                break
-                
-        self.logger.debug("Message buffer cleared.")
-        return True
-    
+                return
+
     def skipNextEnquiry(self, skip=True):
         self.skipEnquiry = skip
     
@@ -91,15 +91,16 @@ class PfeifferTPG26xProtocol(Protocol):
         return response == b'\x15'
             
     def query(self, transport, header, *data):
-        message = self.create_message(header, *data)
-        self.logger.debug('Query: %s', repr(message))
-        with transport:
-            transport.write(message)
-            self.is_acknowledged(transport)
-            self.enquiry(transport)
-            response = self.get_response(transport)
-        self.logger.debug('Response: %s', repr(response))
-        return self.parse_response(response)
+        with InterProcessTransportLock(transport):
+            message = self.create_message(header, *data)
+            self.logger.debug('Query: %s', repr(message))
+            with transport:
+                transport.write(message)
+                self.is_acknowledged(transport)
+                self.enquiry(transport)
+                response = self.get_response(transport)
+            self.logger.debug('Response: %s', repr(response))
+            return self.parse_response(response)
 
     def write(self, transport, header, *data):
         return self.query(transport, header, *data)
