@@ -16,19 +16,12 @@
 from driver import PfeifferTPG26xDriver
 from protocol import PfeifferTPG26xProtocol
 from e21_util.transport import Serial
-import logging
+from e21_util.logging import get_sputter_logger
 
 class PfeifferTPG26xFactory:
 
     def get_logger(self):
-        logger = logging.getLogger('Pfeiffer Gauge')
-        logger.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        fh = logging.FileHandler('gauge.log')
-        fh.setLevel(logging.DEBUG)
-        fh.setFormatter(formatter)
-        logger.addHandler(fh)
-        return logger
+        return get_sputter_logger('Pfeiffer Gauge', 'gauge.log')
     
     def create_gauge(self, device="/dev/ttyUSB1", logger=None):
         if logger is None:
