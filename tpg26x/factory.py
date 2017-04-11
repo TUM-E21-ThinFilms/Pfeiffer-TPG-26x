@@ -16,7 +16,7 @@
 from driver import PfeifferTPG26xDriver
 from protocol import PfeifferTPG26xProtocol
 from e21_util.transport import Serial
-from e21_util.logging import get_sputter_logger
+from e21_util.log import get_sputter_logger
 
 class PfeifferTPG26xFactory:
 
