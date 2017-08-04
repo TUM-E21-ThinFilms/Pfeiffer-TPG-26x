@@ -137,7 +137,10 @@ class PfeifferTPG26xDriver(Driver):
             return self.query_command(cmd)
         
         raise ValueError('Wrong gauge')
-    
+
+    def get_pressure(self):
+        return self.get_pressure_measurement()[1]
+
     # Note that this method should only be called after an
     # `start_continuous_measurement`
     def get_continuous_measurement(self):
