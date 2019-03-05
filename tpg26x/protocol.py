@@ -13,30 +13,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import slave
-
-import e21_util
+from e21_util.interface import Loggable
 from e21_util.lock import InterProcessTransportLock
 from e21_util.error import CommunicationError
+from e21_util.serial_connection import AbstractTransport, SerialTimeoutException
 
-from slave.protocol import Protocol
-from slave.transport import Timeout
+class PfeifferTPG26xProtocol(Loggable):
 
-class PfeifferTPG26xProtocol(Protocol):
+    def __init__(self, transport, logger):
+        super(PfeifferTPG26xProtocol, self).__init__(logger)
 
-    def __init__(self, logger):
+        assert isinstance(transport, AbstractTransport)
+        self._transport = transport
+        
         self.encoding = "ascii"
         self.responseTerminal = "\r\n"
         self.messageTerminal = "\r\n"
         self.responseDataSeparator = ","
         self.skipEnquiry = False
-        self.logger = logger
 
-    def reset(self, transport):
-        transport.write(b'\x03')
-        
-    def set_logger(self, logger):
-        self.logger = logger
+    def reset(self):
+        self._transport.write(b'\x03')
 
     def create_message(self, header, *data):
         msg = []
@@ -45,43 +42,44 @@ class PfeifferTPG26xProtocol(Protocol):
         msg.append(self.messageTerminal)
         return ''.join(msg).encode(self.encoding)
 
-    def clear(self, transport):
-        with InterProcessTransportLock(transport):
+    def clear(self):
+        with self._transport:
             # Send <CR><LF>
-            # this should stop always the continous measurement
-            self.logger.debug("Clearing message buffer...")
-            transport.__write__(b'\x0D\x0A')
+            # this should stop always the continuous measurement
+            self._logger.debug("Clearing message buffer...")
+            self._transport.write(b'\x0D\x0A')
             try:
                 while True:
-                    transport.read_bytes(32)
-            except slave.transport.Timeout:
+                    self._transport.read_bytes(32)
+            except SerialTimeoutException:
                 return
 
     def skipNextEnquiry(self, skip=True):
         self.skipEnquiry = skip
     
-    def enquiry(self, transport):
-        if not self.skipEnquiry: 
-            transport.write(b'\x05')
-        
+    def enquiry(self):
+        if not self.skipEnquiry:
+                self._transport.write(b'\x05')
+
         self.skipEnquiry = False
 
-    def get_response(self, transport):
+    def get_response(self):
         try:
-            return transport.read_until(self.responseTerminal.encode(self.encoding))
-        except slave.transport.Timeout:
+            return self._transport.read_until(self.responseTerminal.encode(self.encoding))
+        except SerialTimeoutException:
             raise CommunicationError("Received a timeout")
 
     def parse_response(self, response):
         return response.decode(self.encoding).split(self.responseDataSeparator)
 
-    def is_acknowledged(self, transport):
-        response = self.get_response(transport)
+    def is_acknowledged(self):
+        response = self.get_response()
 
         if self.is_nack(response):
             raise CommunicationError("Acknowledgement error! Negative Acknowledgement received")
+
         if not self.is_ack(response):
-            self.logger.debug("Received: \"%s\"", repr(response))
+            self._logger.debug("Received: {}".format(repr(response)))
             raise CommunicationError("Acknowledgement error! No acknowledgement was sent back from gauge")
 
     def is_ack(self, response):
@@ -90,16 +88,17 @@ class PfeifferTPG26xProtocol(Protocol):
     def is_nack(self, response):
         return response == b'\x15'
             
-    def query(self, transport, header, *data):
-        with InterProcessTransportLock(transport):
+    def query(self, header, *data):
+        with self._transport:
             message = self.create_message(header, *data)
-            self.logger.debug('Query: %s', repr(message))
-            with transport:
-                transport.write(message)
-                self.is_acknowledged(transport)
-                self.enquiry(transport)
-                response = self.get_response(transport)
-            self.logger.debug('Response: %s', repr(response))
+            self._logger.debug('Query: %s', repr(message))
+
+            self._transport.write(message)
+            self.is_acknowledged()
+            self.enquiry()
+            response = self.get_response()
+
+            self._logger.debug('Response: %s', repr(response))
             return self.parse_response(response)
 
     def write(self, transport, header, *data):

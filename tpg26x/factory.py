@@ -13,13 +13,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from driver import PfeifferTPG26xDriver
-from protocol import PfeifferTPG26xProtocol
+from tpg26x.driver import PfeifferTPG26xDriver
+from tpg26x.protocol import PfeifferTPG26xProtocol
 from e21_util.transport import Serial
 from e21_util.log import get_sputter_logger
 from e21_util.ports import Ports
 
-class PfeifferTPG26xFactory:
+class PfeifferTPG26xFactory(object):
+
+    @staticmethod
+    def create(transport, logger):
+        return PfeifferTPG26xDriver(PfeifferTPG26xProtocol(transport, logger), logger)
 
     def get_logger(self):
         return get_sputter_logger('Pfeiffer Gauge', 'gauge.log')
