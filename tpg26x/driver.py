@@ -85,13 +85,17 @@ class Reader(object):
 class PfeifferTPG26xDriver(Driver):
 
     def __init__(self, protocol):
-        super(PfeifferTPG26xDriver, self).__init__(transport, protocol)
+        super(PfeifferTPG26xDriver, self).__init__(protocol)
         assert isinstance(protocol, PfeifferTPG26xProtocol)
 
         self._protocol = protocol
 
     def query_command(self, cmd):
-        return cmd.query(self._protocol)
+
+        response = self._protocol.query(cmd.header, ())
+        response = _load(cmd.response_type, response)
+        return response
+        #return cmd.query(self._protocol)
         
     def get_protocol(self):
         return self._protocol
