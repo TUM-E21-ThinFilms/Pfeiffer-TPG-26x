@@ -13,13 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-
 from setuptools import setup, find_packages
-
-requires = ['slave', 'e21_util']
-
-desc = ('An implementation of the Pfeiffer TPG 26x protocol')
 
 setup(
     name='tpg26x',
@@ -28,9 +22,9 @@ setup(
     author_email='alexander.book@frm2.tum.de',
     license = 'GNU General Public License (GPL), Version 3',
     url='https://github.com/TUM-E21-ThinFilms/Pfeiffer-TPG-26x',
-    description=desc,
+    description='An implementation of the Pfeiffer TPG 26x protocol',
     long_description=open('README.md').read(),
     packages=find_packages(),
     include_package_data=True,
-    install_requires=requires,
+    install_requires=['slave', 'e21_util'],
 )
