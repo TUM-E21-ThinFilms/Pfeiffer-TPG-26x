@@ -68,7 +68,7 @@ class PfeifferTPG26xProtocol(Loggable):
             resp = self._transport.read_until(self.responseTerminal.encode(self.encoding))
             self._logger.debug("Received {}".format(repr(resp)))
             # now remove the response terminal
-            return resp[:len(self.responseTerminal)]
+            return resp[:-len(self.responseTerminal)]
         except SerialTimeoutException:
             raise CommunicationError("Received a timeout")
 
