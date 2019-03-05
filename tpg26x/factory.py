@@ -23,7 +23,7 @@ class PfeifferTPG26xFactory(object):
 
     @staticmethod
     def create(transport, logger):
-        return PfeifferTPG26xDriver(PfeifferTPG26xProtocol(transport, logger), logger)
+        return PfeifferTPG26xDriver(PfeifferTPG26xProtocol(transport, logger))
 
     def get_logger(self):
         return get_sputter_logger('Pfeiffer Gauge', 'gauge.log')
