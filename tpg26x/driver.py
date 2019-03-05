@@ -92,8 +92,8 @@ class PfeifferTPG26xDriver(Driver):
 
     def query_command(self, cmd):
 
-        response = self._protocol.query(cmd.header, ())
-        response = _load(cmd.response_type, response)
+        response = self._protocol.query(cmd._query.header)
+        response = _load(cmd._query.response_type, response)
         return response
         #return cmd.query(self._protocol)
         

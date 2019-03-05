@@ -65,7 +65,10 @@ class PfeifferTPG26xProtocol(Loggable):
 
     def get_response(self):
         try:
-            return self._transport.read_until(self.responseTerminal.encode(self.encoding))
+            resp = self._transport.read_until(self.responseTerminal.encode(self.encoding))
+            self._logger.debug("Received {}".format(repr(resp)))
+            # now remove the response terminal
+            return resp[:len(self.responseTerminal)]
         except SerialTimeoutException:
             raise CommunicationError("Received a timeout")
 
@@ -79,7 +82,6 @@ class PfeifferTPG26xProtocol(Loggable):
             raise CommunicationError("Acknowledgement error! Negative Acknowledgement received")
 
         if not self.is_ack(response):
-            self._logger.debug("Received: {}".format(repr(response)))
             raise CommunicationError("Acknowledgement error! No acknowledgement was sent back from gauge")
 
     def is_ack(self, response):
