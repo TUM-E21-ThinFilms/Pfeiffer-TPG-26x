@@ -24,31 +24,3 @@ class PfeifferTPG26xFactory(object):
     @staticmethod
     def create(transport, logger):
         return PfeifferTPG26xDriver(PfeifferTPG26xProtocol(transport, logger))
-
-    def get_logger(self):
-        return get_sputter_logger('Pfeiffer Gauge', 'gauge.log')
-    
-    def create_gauge(self, device=None, logger=None):
-        if logger is None:
-            logger = self.get_logger()
-
-        if device is None:
-            device = Ports().get_port(Ports.DEVICE_PFEIFFER_GAUGE)
-
-        protocol = PfeifferTPG26xProtocol(logger)
-        return PfeifferTPG26xDriver(Serial(device, 9600, 8, 'N', 1, 0.5), protocol)
-
-    def get_logger_cryo(self):
-        return get_sputter_logger('Pfeiffer Gauge Cryo', 'gauge_cryo.log')
-
-    def create_gauge_cryo(self, device=None, logger=None):
-        if logger is None:
-            logger = self.get_logger_cryo()
-
-        if device is None:
-            device = Ports().get_port(Ports.DEVICE_GAUGE_CRYO)
-
-        protocol = PfeifferTPG26xProtocol(logger)
-        return PfeifferTPG26xDriver(Serial(device, 9600, 8, 'N', 1, 0.5), protocol)
-
-
